@@ -18,8 +18,7 @@ const RootStack = createStackNavigator({
 {
   initialRouteName: 'Home',
   headerMode: 'none',
-},
-);
+});
 
 //const createTabNavigator = Platform.OS === 'android' 
 
