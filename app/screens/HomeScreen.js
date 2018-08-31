@@ -12,11 +12,11 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1 , flexDirection: 'row'}}>
-        <View style={{ backgroundColor: '#5de2b4', flex: 1, flexDirection: 'row' }} />        
-        <LinearGradient colors={['rgba(0,255,255,0.7)', 'transparent']} style={styles.container}>      
+        <View style={{ backgroundColor: '#5de2b4', flexDirection: 'row' }} />        
+        <LinearGradient colors={['rgba(0,255,255,0.7)', '#42af70']} style={styles.container}>      
             <Title/>
             <ButtonConnection onPress={() => this.props.navigation.navigate('Test')}/>
-        </LinearGradient>          
+        </LinearGradient>                 
       </View>
     );
   }
@@ -24,10 +24,10 @@ export default class HomeScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    height: 300,
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',    
+    height: "100%",
+    width: "100%",    
   },
 });
