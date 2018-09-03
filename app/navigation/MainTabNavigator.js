@@ -1,17 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
-import { LinearGradient, Font } from 'expo';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { Platform } from 'react-native';
+import { createBottomTabNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-
-import TestNavigator from '../screens/TestNavigator';
-import TestNavigator2 from '../screens/TestNavigator2';
-import ScreenTest from '../screens/ScreenTest';
-
 import { MaterialIcons } from '@expo/vector-icons';
 
-import  Title  from '../components/Title/Title';
-import  ButtonConnection  from '../components/ButtonConnection/ButtonConnection';
+import Search from '../screens/Search';
+import History from '../screens/History';
+import Playlist from '../screens/Playlist';
 
 class TabIcon extends React.Component {
   render() {
@@ -20,7 +15,7 @@ class TabIcon extends React.Component {
       <MaterialIcons
         name={this.props.name}
         size={Platform.OS === 'android' ? baseSize - 2 : baseSize}
-        color={this.props.focused ? 'white' : 'black'}
+        color={this.props.focused ? 'white' : 'black'}        
       />
     );
   }
@@ -30,9 +25,9 @@ const createTabNavigator = Platform.OS === 'android' ? createMaterialBottomTabNa
 
 const MainTabNavigator = createTabNavigator({
 
-  NavigatorTest: {screen: TestNavigator},
-  TestScreen: {screen: ScreenTest},
-  NavigatorTest2: {screen: TestNavigator2},
+  Search: {screen: Search},
+  Playlist: {screen: Playlist},
+  History: {screen: History},
 
   },
   {
@@ -48,13 +43,13 @@ const MainTabNavigator = createTabNavigator({
         tabBarLabel,   
         tabBarIcon: ({ focused }) => {
           const { routeName } = navigation.state;
-          if (routeName == 'NavigatorTest'){
+          if (routeName == 'Search'){
             return <TabIcon name="search" focused={focused} />;
           }
-          if (routeName == 'TestScreen'){
+          if (routeName == 'Playlist'){
             return <TabIcon name="playlist-play" focused={focused} />;
           }
-          if (routeName == 'NavigatorTest2'){
+          if (routeName == 'History'){
             return <TabIcon name="history" focused={focused} />;
           }          
         },      

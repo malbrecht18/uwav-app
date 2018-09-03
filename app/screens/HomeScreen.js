@@ -1,10 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Platform } from 'react-native';
-import { LinearGradient, Font } from 'expo';
-import { createStackNavigator } from 'react-navigation';
-import { createMaterialBottomTabNavigator, createBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
+import { StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo';
 
-import { ButtonTest } from '../components/ButtonTest/ButtonTest';
 import  Title  from '../components/Title/Title';
 import  ButtonConnection  from '../components/ButtonConnection/ButtonConnection';
 

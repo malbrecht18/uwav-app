@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import FontTextRoboto from '../FontText/FontTextRoboto';
 
 var s = require('./styles');
