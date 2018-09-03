@@ -15,7 +15,7 @@ class TabIcon extends React.Component {
       <MaterialIcons
         name={this.props.name}
         size={Platform.OS === 'android' ? baseSize - 2 : baseSize}
-        color={this.props.focused ? 'white' : 'black'}        
+        color={this.props.focused ? 'white' : 'black'}                
       />
     );
   }
@@ -55,10 +55,10 @@ const MainTabNavigator = createTabNavigator({
         },      
       };      
     },
-    tabBarOptions: {
+    tabBarOptions: {      
       tinColor: 'black',
       activeTintColor: 'white',
-      inactiveTintColor: 'black',
+      inactiveTintColor: 'black',      
       showIcon: true,
       showLabel: true,
       lazyLoad: true,
