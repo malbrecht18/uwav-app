@@ -14,14 +14,16 @@ class TabIcon extends React.Component {
     return (
       <MaterialIcons
         name={this.props.name}
-        size={Platform.OS === 'android' ? baseSize - 2 : baseSize}
-        color={this.props.focused ? 'white' : 'black'}                
+        size={Platform.OS === 'android' ? baseSize - 6 : baseSize}
+        color={this.props.focused ? 'white' : 'black'}
       />
     );
   }
 }
 
-const createTabNavigator = Platform.OS === 'android' ? createMaterialBottomTabNavigator : createBottomTabNavigator;
+//const createTabNavigator = Platform.OS === 'android' ? createMaterialBottomTabNavigator : createBottomTabNavigator;
+const createTabNavigator = createBottomTabNavigator;
+
 
 const MainTabNavigator = createTabNavigator({
 
@@ -40,7 +42,7 @@ const MainTabNavigator = createTabNavigator({
 
       return {
         header: null,
-        tabBarLabel,   
+        tabBarLabel,
         tabBarIcon: ({ focused }) => {
           const { routeName } = navigation.state;
           if (routeName == 'Search'){
@@ -51,14 +53,14 @@ const MainTabNavigator = createTabNavigator({
           }
           if (routeName == 'History'){
             return <TabIcon name="history" focused={focused} />;
-          }          
-        },      
-      };      
+          }
+        },
+      };
     },
-    tabBarOptions: {      
+    tabBarOptions: {
       tinColor: 'black',
       activeTintColor: 'white',
-      inactiveTintColor: 'black',      
+      inactiveTintColor: 'black',
       showIcon: true,
       showLabel: true,
       lazyLoad: true,
