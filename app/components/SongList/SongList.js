@@ -1,15 +1,15 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet } from 'react-native';
+import { FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 class SongList extends React.Component {
 
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
     this.userStr = ""
-    this.type = "track"
+    this.type = "track,artist,album"
     this.limit = 50
-    this.userToken = 'BQAKZHPYnWzEHAETtikI4PbFrj3UKKqcG9QzOstHyrquLPljqSf4fdwJBpb-Sk_3QWyytGZkdjPryEGawAJ85uUuRRMmDEG7mtFT1-z17hYkPRoJfqa2bfDKR5ogWu60jiHi6x2zsg'
-    this.state ={ isLoading: false}
+    this.userToken = this.props.token
+    this.state ={ isLoading: false }
     this.listRefreshing = false
 
     this.setSearch = this.setSearch.bind(this);
@@ -33,27 +33,26 @@ class SongList extends React.Component {
       })
         .then((response) => response.json())
         .then((responseJson) => {
-
           this.listRefreshing = false;
           this.setState({
+            ...this.state,
             dataSource: responseJson.tracks.items,
             isLoading: false,
-          }, function(){
-
           });
-
         })
         .catch((error) =>{
-          this.listRefreshing = true;
+          this.listRefreshing = false;
           this.setState({
+            ...this.state,
             isLoading: false,
           })
           console.error(error);
         });
 
     } else {
-        this.listRefreshing = true;
+        this.listRefreshing = false;
         this.setState({
+          ...this.state,
           isLoading: false,
           dataSource: null,
         })
@@ -64,11 +63,13 @@ class SongList extends React.Component {
     this.userStr = text;
     this.listRefreshing = true;
     this.setState({
+      ...this.state,
       isLoading: true,
     });
     this.setSearch();
-    if (!text) {
+    if (!text || text === '') {
       this.setState({
+        ...this.state,
         dataSource: null,
       })
     }
@@ -87,20 +88,22 @@ class SongList extends React.Component {
           style={styles.flatListStyle}
           data={this.state.dataSource}
           renderItem={({item}) =>
-            <View style={styles.container}>
-              <Image style={styles.imageStyle}
-                     source={{uri: item.album.images[0].url}} />
-              <View style={{flexDirection: 'column'}}>
-                <Text style={styles.styleSongName}
-                      numberOfLines={1}>
-                  {this.checkSizeName(item.name, 45)}
-                </Text>
-                <Text style={styles.styleArtistName}
-                      numberOfLines={1}>
-                  {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkSizeName(item.album.name, 35), 55)}
-                </Text>
+            <TouchableOpacity>
+              <View style={styles.container}>
+                <Image style={styles.imageStyle}
+                      source={{uri: item.album.images[2].url}} />
+                <View style={{flexDirection: 'column'}}>
+                  <Text style={styles.styleSongName}
+                        numberOfLines={1}>
+                    {this.checkSizeName(item.name, 45)}
+                  </Text>
+                  <Text style={styles.styleArtistName}
+                        numberOfLines={1}>
+                    {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkSizeName(item.album.name, 35), 55)}
+                  </Text>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
           }
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
