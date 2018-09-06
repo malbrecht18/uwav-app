@@ -5,9 +5,9 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: 'black',
         alignItems: 'center',
-        justifyContent: 'center',         
+        justifyContent: 'center',
     },
-    buttonText: {  
-        backgroundColor: 'blue',      
+    buttonText: {
+        backgroundColor: 'blue',
     }
 });

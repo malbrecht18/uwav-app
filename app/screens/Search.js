@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { createStackNavigator } from 'react-navigation';
 import { LinearGradient } from 'expo';
 
 import SongList from '../components/SongList/SongList';

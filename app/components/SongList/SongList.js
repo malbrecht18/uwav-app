@@ -1,6 +1,8 @@
 import React from 'react';
 import { SectionList, FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
+var styles = require('./styles');
+
 class SongList extends React.Component {
 
   constructor(props){
@@ -89,19 +91,19 @@ class SongList extends React.Component {
   }
 
   renderArtistImage(item) {
-    if (typeof item.images[2].url === 'undefined') {
-      return ("https://cdn.pixabay.com/photo/2013/07/13/13/17/karaoke-160752_1280.png");
+    if (typeof item.images[2] === 'undefined') {
+      return ("https://image.jimcdn.com/app/cms/image/transf/none/path/s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
     } else {
       return (item.images[2].url);
     }
   }
 
-  renderSectionSeparator = ({leadingItem}) => 
+  renderSectionSeparator = ({leadingItem}) =>
     leadingItem ? (
       <TouchableOpacity>
         <View>
-          <Text>
-            Plus...
+          <Text style={styles.separatorSectionList}>
+            Voir tous
           </Text>
         </View>
       </TouchableOpacity>
@@ -143,6 +145,9 @@ class SongList extends React.Component {
                 numberOfLines={1}>
             {this.checkSizeName(item.name, 45)}
           </Text>
+          <Text style={styles.styleArtistName}>
+            {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkDate(item.release_date), 55)}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -151,36 +156,35 @@ class SongList extends React.Component {
     <TouchableOpacity>
       <View style={styles.container}>
         <Image style={styles.imageStyle}
-               source={{uri: this.renderArtistImage}} />
+               source={{uri: this.renderArtistImage(item)}} />
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
-            {item.name}
+            {this.checkSizeName(item.name, 45)}
           </Text>
         </View>
       </View>
     </TouchableOpacity>
 
   renderList(){
-    const renderTracks = ({ item }) =>
-      <Text>OK</Text>
-
     if(this.state.isLoading){
       return(
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator/>
         </View>
       )
-    } else if (typeof this.state.tracksData === 'undefined') {
+    } else if (!this.userStr || this.userStr == '') {
       <View>
-        <Text> Il n'y a rien !</Text>
+        <Text> Recherche vide</Text>
       </View>
     } else {
       return(
         <SectionList
           style={styles.flatListStyle}
           renderSectionHeader={({section: {title}}) => (
-            <Text style={{fontWeight: 'bold'}}>{title}</Text>
+            <View style={styles.viewTitleSectionList}>
+              <Text style={styles.titleSectionList}>{title}</Text>
+            </View>
           )}
           //sections={this.sectionsList}
           renderItem={({ item, index, section }) => <Text>{item.name}</Text>}
@@ -191,7 +195,8 @@ class SongList extends React.Component {
           ]}
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
-          SectionSeparatorComponent={({leadingItem}) => leadingItem ? (<Text>Plus...</Text>) : null}
+          SectionSeparatorComponent={this.renderSectionSeparator}
+          stickySectionHeadersEnabled={false}
         />
       )
     }
@@ -219,7 +224,10 @@ class SongList extends React.Component {
     return name.length < size ? name : name.substring(0, size) + '...';
   }
 
-
+  checkDate(release_date){
+    let date = new Date(release_date);
+    return date.getFullYear();
+  }
 
   render(){
     return(
@@ -240,50 +248,5 @@ class SongList extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  styleTextInput: {
-    height: 50,
-    paddingLeft: 50,
-    borderBottomWidth: 0.2,
-    borderBottomColor: 'rgba(66, 175, 112, 0.4)',
-    borderBottomStartRadius: 100,
-    borderBottomEndRadius: 100,
-  },
-  styleSongName: {
-    backgroundColor: 'rgba(0,0,0,0)',
-    paddingLeft: 10,
-    fontSize: 16,
-  },
-  styleArtistName: {
-    backgroundColor: 'rgba(0,0,0,0)',
-    paddingLeft: 7,
-    fontSize: 12,
-  },
-  container: {
-    flex:1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0)',
-    padding: 5,
-  },
-  textInputContainer: {
-    flex: 1,
-    paddingTop:20,
-    backgroundColor: 'rgba(0,0,0,0)'
-  },
-  activityIndicatorContainer: {
-    flex: 1,
-    padding: 20
-  },
-  flatListStyle: {
-    backgroundColor: 'rgba(0,0,0,0)',
-    marginBottom: 88,
-  },
-  imageStyle: {
-    width: 50,
-    height: 50,
-  },
-});
 
 export default SongList;

@@ -4,27 +4,27 @@ import {Font} from 'expo';
 
 class FontText extends Component {
 
-    constructor(props) { 
-        super(props); 
-        this.state = { 
-            titleText: "UwaV" 
-        }; 
-    } 
+    constructor(props) {
+        super(props);
+        this.state = {
+            titleText: "UwaV"
+        };
+    }
 
-    state = { 
+    state = {
         fontLoaded: false,
-    }; 
+    };
 
-    async componentDidMount(){ 
+    async componentDidMount(){
         await Font.loadAsync({
-            'Roboto': require('../../../assets/fonts/Roboto-Medium.ttf'), 
-        }); 
+            'Roboto': require('../../../assets/fonts/Roboto-Medium.ttf'),
+        });
 
-        this.setState({ fontLoaded: true }); } 
-    
+        this.setState({ fontLoaded: true }); }
+
         render(){
             return (
-                this.state.fontLoaded ? ( <Text style={[styles.titleText, this.props.style]}>{this.props.children}</Text> ) : null 
+                this.state.fontLoaded ? ( <Text style={[styles.titleText, this.props.style]}>{this.props.children}</Text> ) : null
             );
         }
     }
@@ -32,8 +32,8 @@ class FontText extends Component {
     const styles = StyleSheet.create({
         titleText: {
             backgroundColor: 'transparent',
-            color: 'white',              
-            fontFamily: 'Roboto',              
+            color: 'white',
+            fontFamily: 'Roboto',
         },
     });
 
