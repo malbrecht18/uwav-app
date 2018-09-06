@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { SectionList, FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 class SongList extends React.Component {
 
@@ -7,7 +7,7 @@ class SongList extends React.Component {
     super(props);
     this.userStr = ""
     this.type = "track,artist,album"
-    this.limit = 50
+    this.limit = 5
     this.userToken = this.props.token
     this.state ={ isLoading: false }
     this.listRefreshing = false
@@ -15,6 +15,13 @@ class SongList extends React.Component {
     this.setSearch = this.setSearch.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.renderList = this.renderList.bind(this);
+    this.sectionsList = this.sectionsList.bind(this);
+
+    this.renderTracks = this.renderTracks.bind(this);
+    this.renderAlbums = this.renderAlbums.bind(this);
+    this.renderArtists = this.renderArtists.bind(this);
+    this.renderSectionSeparator = this.renderSectionSeparator.bind(this);
+    this.renderArtistImage = this.renderArtistImage.bind(this);
   }
 
   setSearch() {
@@ -36,7 +43,9 @@ class SongList extends React.Component {
           this.listRefreshing = false;
           this.setState({
             ...this.state,
-            dataSource: responseJson.tracks.items,
+            tracksData: responseJson.tracks.items,
+            albumsData: responseJson.albums.items,
+            artistsData: responseJson.artists.items,
             isLoading: false,
           });
         })
@@ -54,7 +63,9 @@ class SongList extends React.Component {
         this.setState({
           ...this.state,
           isLoading: false,
-          dataSource: null,
+          tracksData: null,
+          albumsData: null,
+          artistsData: null,
         })
       }
   }
@@ -70,43 +81,117 @@ class SongList extends React.Component {
     if (!text || text === '') {
       this.setState({
         ...this.state,
-        dataSource: null,
+        tracksData: null,
+        albumsData: null,
+        artistsData: null,
       })
     }
   }
 
+  renderArtistImage(item) {
+    if (typeof item.images[2].url === 'undefined') {
+      return ("https://cdn.pixabay.com/photo/2013/07/13/13/17/karaoke-160752_1280.png");
+    } else {
+      return (item.images[2].url);
+    }
+  }
+
+  renderSectionSeparator = ({leadingItem}) => 
+    leadingItem ? (
+      <TouchableOpacity>
+        <View>
+          <Text>
+            Plus...
+          </Text>
+        </View>
+      </TouchableOpacity>
+    ) : null
+
+  sectionsList = () => {
+    return ([
+      {title: 'Titres', data: this.state.tracksData, renderItem: this.renderTracks},
+      {title: 'Albums', data: this.state.albumsData, renderItem: this.renderAlbums},
+      {title: 'Artistes', data: this.state.artistsData, renderItem: this.renderArtists},
+    ]);
+  }
+
+  renderTracks = ({ item }) =>
+    <TouchableOpacity>
+      <View style={styles.container}>
+        <Image style={styles.imageStyle}
+              source={{uri: item.album.images[2].url}} />
+        <View style={{flexDirection: 'column'}}>
+          <Text style={styles.styleSongName}
+                numberOfLines={1}>
+            {this.checkSizeName(item.name, 41)}
+          </Text>
+          <Text style={styles.styleArtistName}
+                numberOfLines={1}>
+            {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkSizeName(item.album.name, 35), 55)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+
+  renderAlbums = ({ item, index, section }) =>
+    <TouchableOpacity>
+      <View style={styles.container}>
+        <Image style={styles.imageStyle}
+               source={{uri: item.images[2].url}} />
+        <View style={{flexDirection: 'column'}}>
+          <Text style={styles.styleSongName}
+                numberOfLines={1}>
+            {this.checkSizeName(item.name, 45)}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+
+  renderArtists = ({item, index, section}) =>
+    <TouchableOpacity>
+      <View style={styles.container}>
+        <Image style={styles.imageStyle}
+               source={{uri: this.renderArtistImage}} />
+        <View style={{flexDirection: 'column'}}>
+          <Text style={styles.styleSongName}
+                numberOfLines={1}>
+            {item.name}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+
   renderList(){
+    const renderTracks = ({ item }) =>
+      <Text>OK</Text>
+
     if(this.state.isLoading){
       return(
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator/>
         </View>
       )
+    } else if (typeof this.state.tracksData === 'undefined') {
+      <View>
+        <Text> Il n'y a rien !</Text>
+      </View>
     } else {
       return(
-        <FlatList
+        <SectionList
           style={styles.flatListStyle}
-          data={this.state.dataSource}
-          renderItem={({item}) =>
-            <TouchableOpacity>
-              <View style={styles.container}>
-                <Image style={styles.imageStyle}
-                      source={{uri: item.album.images[2].url}} />
-                <View style={{flexDirection: 'column'}}>
-                  <Text style={styles.styleSongName}
-                        numberOfLines={1}>
-                    {this.checkSizeName(item.name, 45)}
-                  </Text>
-                  <Text style={styles.styleArtistName}
-                        numberOfLines={1}>
-                    {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkSizeName(item.album.name, 35), 55)}
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          }
+          renderSectionHeader={({section: {title}}) => (
+            <Text style={{fontWeight: 'bold'}}>{title}</Text>
+          )}
+          //sections={this.sectionsList}
+          renderItem={({ item, index, section }) => <Text>{item.name}</Text>}
+          sections={[
+            {title: 'Titres', data: this.state.tracksData, renderItem: this.renderTracks},
+            {title: 'Albums', data: this.state.albumsData, renderItem: this.renderAlbums},
+            {title: 'Artists', data: this.state.artistsData, renderItem: this.renderArtists}
+          ]}
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
+          SectionSeparatorComponent={({leadingItem}) => leadingItem ? (<Text>Plus...</Text>) : null}
         />
       )
     }
