@@ -11,17 +11,22 @@ class SongList extends React.Component {
     this.type = "track,artist,album"
     this.limit = 5
     this.userToken = this.props.token
-    this.state ={ isLoading: false }
+    this.playlistId = "6VIMwOQw4rOInLuRa7jayv"
+    this.state = {
+      isLoading: false
+    }
+
     this.listRefreshing = false
 
     this.setSearch = this.setSearch.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.renderList = this.renderList.bind(this);
-    this.sectionsList = this.sectionsList.bind(this);
+    //this.selectSong = this.selectSong.bind(this);
 
     this.renderTracks = this.renderTracks.bind(this);
     this.renderAlbums = this.renderAlbums.bind(this);
     this.renderArtists = this.renderArtists.bind(this);
+
     this.renderSectionSeparator = this.renderSectionSeparator.bind(this);
     this.renderArtistImage = this.renderArtistImage.bind(this);
   }
@@ -90,6 +95,35 @@ class SongList extends React.Component {
     }
   }
 
+  selectSong(item) {
+    let url = 'https://api.spotify.com/v1/playlists/' +
+    encodeURIComponent(this.playlistId) +
+    '/tracks?uris=' +
+    encodeURIComponent(item.uri);
+
+    let options = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + this.userToken,
+      }
+    };
+
+    console.log('url : ' + url);
+    console.log('options : ' + options.headers.Authorization);
+
+    fetch(url, options)
+        .then((response) => {
+          if (response.status != 201) {
+            console.error("Cannot add track to playlist");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+  }
+
   renderArtistImage(item) {
     if (typeof item.images[2] === 'undefined') {
       return ("https://image.jimcdn.com/app/cms/image/transf/none/path/s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
@@ -109,18 +143,10 @@ class SongList extends React.Component {
       </TouchableOpacity>
     ) : null
 
-  sectionsList = () => {
-    return ([
-      {title: 'Titres', data: this.state.tracksData, renderItem: this.renderTracks},
-      {title: 'Albums', data: this.state.albumsData, renderItem: this.renderAlbums},
-      {title: 'Artistes', data: this.state.artistsData, renderItem: this.renderArtists},
-    ]);
-  }
-
   renderTracks = ({ item }) =>
-    <TouchableOpacity>
+    <TouchableOpacity onPress={() => this.selectSong(item)}>
       <View style={styles.container}>
-        <Image style={styles.imageStyle}
+        <Image style={styles.imageTrackStyle}
               source={{uri: item.album.images[2].url}} />
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
@@ -138,7 +164,7 @@ class SongList extends React.Component {
   renderAlbums = ({ item, index, section }) =>
     <TouchableOpacity>
       <View style={styles.container}>
-        <Image style={styles.imageStyle}
+        <Image style={styles.imageAlbumStyle}
                source={{uri: item.images[2].url}} />
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
@@ -155,7 +181,7 @@ class SongList extends React.Component {
   renderArtists = ({item, index, section}) =>
     <TouchableOpacity>
       <View style={styles.container}>
-        <Image style={styles.imageStyle}
+        <Image style={styles.imageArtistStyle}
                source={{uri: this.renderArtistImage(item)}} />
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
@@ -204,7 +230,7 @@ class SongList extends React.Component {
 
   checkArtistsNumber(artists) {
     let artistToReturn = '';
-    if (artists.length > 0) {
+    if (artists.length > 1) {
       for (let i = 0; i < artists.length; i++) {
         if (artistToReturn != '') {
           artistToReturn = artistToReturn + ', ' + artists[i].name;

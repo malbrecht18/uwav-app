@@ -9,9 +9,9 @@ export default class Login extends React.Component {
         this.client_id = 'be2a1bbadd2e47bd908b45d002d38d28';
         this.client_secret = '6dce2c9cfd864a2983e6f12d41d0d396'
         this.response_type = 'code';
-        this.scope = 'user-read-private user-read-email';
+        this.scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
         this.spotify_state = this.generateRandomString(16);
-        this.redirect_uri = 'https://www.google.com';
+        this.redirect_uri = 'http://192.168.43.128/spotify/index.html';
         this.authorizationCode;
 
         this.state = {
@@ -81,7 +81,7 @@ export default class Login extends React.Component {
                     style={{marginTop: 24}}
                     onNavigationStateChange = {(state) => {
                         console.log(state);
-                        if (state.url.indexOf('https://www.google.com/?code') != -1 && !state.loading) {
+                        if (state.url.indexOf(this.redirect_uri + '?code') != -1 && !state.loading) {
                             this.authorizationCode = state.url.substring(state.url.indexOf('code') + 5, state.url.length);
                             console.log('This is the authorization code : ' + this.authorizationCode);
                             this.getToken();
