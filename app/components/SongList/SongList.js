@@ -1,5 +1,5 @@
 import React from 'react';
-import { SectionList, FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { SectionList, ToastAndroid, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 var styles = require('./styles');
 
@@ -21,7 +21,7 @@ class SongList extends React.Component {
     this.setSearch = this.setSearch.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.renderList = this.renderList.bind(this);
-    //this.selectSong = this.selectSong.bind(this);
+    this.selectSong = this.selectSong.bind(this);
 
     this.renderTracks = this.renderTracks.bind(this);
     this.renderAlbums = this.renderAlbums.bind(this);
@@ -110,13 +110,25 @@ class SongList extends React.Component {
       }
     };
 
-    console.log('url : ' + url);
-    console.log('options : ' + options.headers.Authorization);
-
     fetch(url, options)
         .then((response) => {
           if (response.status != 201) {
+            ToastAndroid.showWithGravityAndOffset(
+              'Cannot add track to playlist',
+              ToastAndroid.LONG,
+              ToastAndroid.CENTER,
+              25,
+              50
+            );
             console.error("Cannot add track to playlist");
+          } else {
+            ToastAndroid.showWithGravityAndOffset(
+              'Track added to playlist',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+              25,
+              50
+            );
           }
         })
         .catch((error) => {
@@ -207,6 +219,7 @@ class SongList extends React.Component {
       return(
         <SectionList
           style={styles.flatListStyle}
+          keyExtractor={(item, index) => index.toString()}
           renderSectionHeader={({section: {title}}) => (
             <View style={styles.viewTitleSectionList}>
               <Text style={styles.titleSectionList}>{title}</Text>
@@ -219,7 +232,6 @@ class SongList extends React.Component {
             {title: 'Albums', data: this.state.albumsData, renderItem: this.renderAlbums},
             {title: 'Artists', data: this.state.artistsData, renderItem: this.renderArtists}
           ]}
-          keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
           SectionSeparatorComponent={this.renderSectionSeparator}
           stickySectionHeadersEnabled={false}
@@ -251,6 +263,10 @@ class SongList extends React.Component {
   }
 
   checkDate(release_date){
+    if (typeof release_date == 'undefined' || release_date == '') {
+      return ' ';
+    }
+
     let date = new Date(release_date);
     return date.getFullYear();
   }

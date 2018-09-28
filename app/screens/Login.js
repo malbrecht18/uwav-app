@@ -7,11 +7,12 @@ export default class Login extends React.Component {
     constructor(props) {
         super(props);
         this.client_id = 'be2a1bbadd2e47bd908b45d002d38d28';
-        this.client_secret = '6dce2c9cfd864a2983e6f12d41d0d396'
+        this.client_secret = '6dce2c9cfd864a2983e6f12d41d0d396';
+        this.client_code = Base64.btoa(this.client_id + ':' + this.client_secret);
         this.response_type = 'code';
         this.scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
         this.spotify_state = this.generateRandomString(16);
-        this.redirect_uri = 'http://192.168.43.128/spotify/index.html';
+        this.redirect_uri = 'http://192.168.1.94/spotify/index.html';
         this.authorizationCode;
 
         this.state = {
@@ -38,7 +39,7 @@ export default class Login extends React.Component {
         fetch('https://accounts.spotify.com/api/token', {
             method: 'POST',
             headers: {
-                Authorization: 'Basic ' + Base64.btoa(this.client_id + ':' + this.client_secret),
+                Authorization: 'Basic ' + this.client_code,
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: "grant_type=authorization_code&code=" +  this.authorizationCode + "&redirect_uri=" + this.redirect_uri,
@@ -55,10 +56,11 @@ export default class Login extends React.Component {
                 ...this.state,
                 isLoggedIn: true,
             })
-            this.props.navigation.navigate('Tab', {
+            this.props.navigation.navigate('Session', {
                 accessToken: responseJson.access_token,
                 refreshToken: responseJson.refresh_token,
                 expiresIn: responseJson.expires_in,
+                clientCode: this.client_code,
             });
         })
         .catch((error) => {
