@@ -1,5 +1,10 @@
 import React from 'react';
-import { SectionList, ToastAndroid, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+
+import { SectionList, FlatList, ActivityIndicator, Text, View, Image, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { withNavigation } from 'react-navigation';
+
+import Utility from '../Utility';
+
 
 var styles = require('./styles');
 
@@ -21,7 +26,9 @@ class SongList extends React.Component {
     this.setSearch = this.setSearch.bind(this);
     this.handleRefresh = this.handleRefresh.bind(this);
     this.renderList = this.renderList.bind(this);
+
     this.selectSong = this.selectSong.bind(this);
+
 
     this.renderTracks = this.renderTracks.bind(this);
     this.renderAlbums = this.renderAlbums.bind(this);
@@ -146,7 +153,7 @@ class SongList extends React.Component {
 
   renderSectionSeparator = ({leadingItem}) =>
     leadingItem ? (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewAllResults', {accessToken: this.userToken, userStr: this.userStr})}>
         <View>
           <Text style={styles.separatorSectionList}>
             Voir tous
@@ -163,11 +170,11 @@ class SongList extends React.Component {
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
-            {this.checkSizeName(item.name, 41)}
+            {Utility.checkSizeName(item.name, 41)}
           </Text>
           <Text style={styles.styleArtistName}
                 numberOfLines={1}>
-            {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkSizeName(item.album.name, 35), 55)}
+            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) + ' • ' + Utility.checkSizeName(item.album.name, 35), 55)}
           </Text>
         </View>
       </View>
@@ -181,10 +188,10 @@ class SongList extends React.Component {
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
-            {this.checkSizeName(item.name, 45)}
+            {Utility.checkSizeName(item.name, 45)}
           </Text>
           <Text style={styles.styleArtistName}>
-            {' ' + this.checkSizeName(this.checkArtistsNumber(item.artists) + ' • ' + this.checkDate(item.release_date), 55)}
+            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) + ' • ' + Utility.checkDate(item.release_date), 55)}
           </Text>
         </View>
       </View>
@@ -198,7 +205,7 @@ class SongList extends React.Component {
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
-            {this.checkSizeName(item.name, 45)}
+            {Utility.checkSizeName(item.name, 45)}
           </Text>
         </View>
       </View>
@@ -240,38 +247,9 @@ class SongList extends React.Component {
     }
   }
 
-  checkArtistsNumber(artists) {
-    let artistToReturn = '';
-    if (artists.length > 1) {
-      for (let i = 0; i < artists.length; i++) {
-        if (artistToReturn != '') {
-          artistToReturn = artistToReturn + ', ' + artists[i].name;
-        }
-        else {
-          artistToReturn = artists[i].name;
-        }
-      }
-    }
-    else {
-      artistToReturn = artists[0].name;
-    }
-    return artistToReturn;
-  }
-
-  checkSizeName(name, size) {
-    return name.length < size ? name : name.substring(0, size) + '...';
-  }
-
-  checkDate(release_date){
-    if (typeof release_date == 'undefined' || release_date == '') {
-      return ' ';
-    }
-
-    let date = new Date(release_date);
-    return date.getFullYear();
-  }
 
   render(){
+    const {navigation} = this.props;
     return(
       <View style={styles.textInputContainer}>
         <TextInput
@@ -291,4 +269,4 @@ class SongList extends React.Component {
   }
 }
 
-export default SongList;
+export default withNavigation(SongList);
