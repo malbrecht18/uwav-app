@@ -55,7 +55,7 @@ export default class Login extends React.Component {
                 ...this.state,
                 isLoggedIn: true,
             })
-            this.props.navigation.navigate('Tab', {
+            this.props.navigation.navigate('Search', {
                 accessToken: responseJson.access_token,
                 refreshToken: responseJson.refresh_token,
                 expiresIn: responseJson.expires_in,

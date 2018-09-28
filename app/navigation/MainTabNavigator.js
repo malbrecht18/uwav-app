@@ -1,12 +1,24 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import Search from '../screens/Search';
 import History from '../screens/History';
 import Playlist from '../screens/Playlist';
+import ViewAllResults from '../screens/ViewAllResults';
+
+const SearchStackNavigator = createStackNavigator (
+{
+  Search: { screen: Search },
+  ViewAllResults: { screen: ViewAllResults },
+}
+,
+{
+  headerMode: 'none',
+  initialRouteName: 'Search',
+});
 
 class TabIcon extends React.Component {
   render() {
@@ -27,7 +39,7 @@ const createTabNavigator = createBottomTabNavigator;
 
 const MainTabNavigator = createTabNavigator({
 
-  Search: {screen: Search},
+  Search: {screen: SearchStackNavigator},
   Playlist: {screen: Playlist},
   History: {screen: History},
 
