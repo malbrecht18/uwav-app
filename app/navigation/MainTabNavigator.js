@@ -69,6 +69,7 @@ const MainTabNavigator = createTabNavigator({
         },
       };
     },
+    initialRouteName: 'Playlist',
     tabBarOptions: {
       tinColor: 'black',
       activeTintColor: 'white',

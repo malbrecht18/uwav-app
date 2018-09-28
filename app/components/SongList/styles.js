@@ -39,9 +39,19 @@ module.exports = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0)',
         marginBottom: 88,
     },
-      imageStyle: {
+      imageArtistStyle: {
         width: 50,
         height: 50,
+        borderRadius: 100,
+    },
+      imageAlbumStyle: {
+        width: 50,
+        height: 50,
+    },
+      imageTrackStyle: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
     },
       viewTitleSectionList: {
         flexDirection: 'row',
