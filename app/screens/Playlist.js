@@ -3,6 +3,8 @@ import { RefreshControl, Text, View, FlatList, ActivityIndicator, TouchableOpaci
 import { LinearGradient } from 'expo';
 
 import  Title  from '../components/Title/Title';
+import Utility from '../components/Utility';
+import SpotifyStore from '../components/SpotifyStore';
 
 var styles = require('../components/SongList/styles.js');
 export default class ScreenTest extends React.Component {
@@ -17,12 +19,10 @@ export default class ScreenTest extends React.Component {
       timer: null,
     };
 
-    this.userToken = this.props.token;
     this.playlistId = "6VIMwOQw4rOInLuRa7jayv";
 
     this.renderTracks = this.renderTracks.bind(this);
     this.getTracks = this.getTracks.bind(this);
-    this.refreshUserToken = this.refreshUserToken.bind(this);
 
     this._onRefresh = this._onRefresh.bind(this);
   }
@@ -32,51 +32,43 @@ export default class ScreenTest extends React.Component {
       ...this.state,
       isLoading: true,
     });
-    let url = "https://api.spotify.com/v1/playlists/" + this.playlistId;
-    let options = {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + this.userToken,
-      }
-    };
 
-    fetch(url, options)
-    .then((response) => response.json())
-    .then((responseJson) => {
-      this.setState({
-        ...this.state,
-        first: false,
-        dataSource: responseJson.tracks.items,
-        isLoading: false,
-      });
-    })
-  }
+    SpotifyStore('user_data').then((result) => {
+      this.accessToken = result.access_token;
+      this.refreshToken = result.refresh_token;
+      this.expiresIn = result.expires_in;
+      this.clientCode = result.client_code;
 
-  refreshUserToken() {
-    let url = 'https://accounts.spotify.com/api/token';
-    let options = {
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + this.clientCode,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: 'grant_type=refresh_token&refresh_token=' + this.refreshToken,
-    };
-    fetch(url, options)
-    .then((response) => {
-      if (response.status == '200') {
-        console.log("The token has been refreshed successfully !");
-        return response.json();
-      } else {
-        console.error('Cannot refresh token, error ' + response.status);
-      }
-    })
-    .then((responseJson) => {
-      this.userToken = responseJson.accessToken;
-      this.expiresIn = responseJson.expires_in;
-    })
+      let url = "https://api.spotify.com/v1/playlists/" + this.playlistId;
+      let options = {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.accessToken,
+        }
+      };
+
+      fetch(url, options)
+      .then((response) => {
+        if (response.status == '401') {
+          let refresh = Utility.refreshToken();
+          this.accessToken = refresh.accessToken;
+          this.expiresIn = refresh.expiresIn;
+          this.getTracks();
+        } else if (response.status == '200') {
+          return response.json();
+        }
+      })
+      .then((responseJson) => {
+        this.setState({
+          ...this.state,
+          first: false,
+          dataSource: responseJson.tracks.items,
+          isLoading: false,
+        });
+      })
+    });
   }
 
   renderTracks = ({ item }) =>
@@ -132,36 +124,12 @@ export default class ScreenTest extends React.Component {
   }
 
   componentDidMount() {
-    let timer = setInterval(this.refreshUserToken, (this.expiresIn - 10) * 1000);
-
-    this.setState({
-      ...this.state,
-      timer: timer,
-    });
-
     if (this.state.first) {
       this.getTracks();
     }
   }
 
-  componentWillUnmount() {
-    this.clearInterval(this.state.timer);
-  }
-
   render() {
-    const {navigation} = this.props;
-    const accessToken = navigation.getParam('accessToken', 'no token !');
-    const refreshToken = navigation.getParam('refreshToken', 'no refresh token !');
-    const expiresIn = navigation.getParam('expiresIn', 'no expire value !');
-    const clientCode = navigation.getParam('clientCode', 'no client code');
-
-    this.userToken = accessToken;
-    this.refreshToken = refreshToken;
-    this.clientCode = clientCode;
-    this.expiresIn = expiresIn;
-
-    //console.log('Token from playlist : ' + accessToken);
-
     if(!this.state.isLoading){
       return (
         <View style={{ flex: 1 , flexDirection: 'row'}}>
@@ -196,17 +164,3 @@ export default class ScreenTest extends React.Component {
     }
   }
 }
-
-/*const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    height: "100%",
-    width: "100%",
-  },
-  textStyle: {
-    fontSize: 64,
-    color: 'white',
-  },
-});*/

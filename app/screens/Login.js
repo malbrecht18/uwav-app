@@ -2,6 +2,7 @@ import React from 'react';
 import {ActivityIndicator, View, WebView} from 'react-native';
 
 import Base64 from '../components/Base64';
+import SpotifyStore from '../components/SpotifyStore';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -12,7 +13,7 @@ export default class Login extends React.Component {
         this.response_type = 'code';
         this.scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
         this.spotify_state = this.generateRandomString(16);
-        this.redirect_uri = 'http://192.168.1.94/spotify/index.html';
+        this.redirect_uri = 'http://192.168.43.128/spotify/index.html';
         this.authorizationCode;
 
         this.state = {
@@ -57,11 +58,15 @@ export default class Login extends React.Component {
                 isLoggedIn: true,
             })
 
-            this.props.navigation.navigate('Session', {
-                accessToken: responseJson.access_token,
-                refreshToken: responseJson.refresh_token,
-                expiresIn: responseJson.expires_in,
-                clientCode: this.client_code,
+            let userData = {
+                access_token: responseJson.access_token,
+                refresh_token: responseJson.refresh_token,
+                expires_in: responseJson.expires_in.toString(),
+                client_code: responseJson.client_code,
+            };
+
+            SpotifyStore('user_data', userData).then(() => {
+                this.props.navigation.navigate('Tab');
             });
         })
         .catch((error) => {

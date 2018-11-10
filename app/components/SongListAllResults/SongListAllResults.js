@@ -3,6 +3,7 @@ import { ActivityIndicator, Text, View, Image, TouchableOpacity, FlatList } from
 import { withNavigation } from 'react-navigation';
 
 import Utility from '../Utility';
+import SpotifyStore from '../SpotifyStore';
 
 var styles = require('./styles');
 
@@ -13,7 +14,6 @@ class SongListAllResults extends React.Component {
     this.userStr = this.props.textSearch
     this.type = "track"
     this.limit = 50
-    this.userToken = this.props.token
     this.state ={ isLoading: false, first: true }
     this.listRefreshing = false
 
@@ -36,10 +36,18 @@ class SongListAllResults extends React.Component {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.userToken,
+          'Authorization': 'Bearer ' + this.accessToken,
         }
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == '401') {
+            let refresh = Utility.refreshToken();
+            this.accessToken = refresh.accessToken;
+            this.expiresIn = refresh.expiresIn;
+            this.setSearch();
+          }
+          return response.json();
+        })
         .then((responseJson) => {
           this.listRefreshing = false;
           this.setState({
@@ -74,18 +82,22 @@ class SongListAllResults extends React.Component {
       isLoading: true,
       first: false,
     });
-    this.setSearch();
-    if (!this.userStr || this.userStr === '') {
-      this.setState({
-        ...this.state,
-        tracksData: null,
-      })
-    }
+    SpotifyStore('user_data').then((result) =>{
+      this.accessToken = result.access_token;
+      this.setSearch();
+      if (!this.userStr || this.userStr === '') {
+        this.setState({
+          ...this.state,
+          tracksData: null,
+        })
+      }
+    });
   }
 
   renderArtistImage(item) {
     if (typeof item.album === 'undefined') {
-      return ("https://image.jimcdn.com/app/cms/image/transf/none/path/s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
+      return ("https://image.jimcdn.com/app/cms/image/transf/none/path/ \
+              s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
     } else {
       return (item.album.images[2].url);
     }
@@ -140,7 +152,6 @@ class SongListAllResults extends React.Component {
   }
 
   render(){
-    const {navigation} = this.props;
     return(
       <View style={styles.textInputContainer}>
         {this.renderList()}

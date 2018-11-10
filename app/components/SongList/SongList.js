@@ -4,6 +4,7 @@ import { SectionList, FlatList, ActivityIndicator, Text, View, Image, TextInput,
 import { withNavigation } from 'react-navigation';
 
 import Utility from '../Utility';
+import SpotifyStore from '../SpotifyStore';
 
 
 var styles = require('./styles');
@@ -15,7 +16,6 @@ class SongList extends React.Component {
     this.userStr = ""
     this.type = "track,artist,album"
     this.limit = 5
-    this.userToken = this.props.token
     this.playlistId = "6VIMwOQw4rOInLuRa7jayv"
     this.state = {
       isLoading: false
@@ -49,11 +49,20 @@ class SongList extends React.Component {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.userToken,
+          'Authorization': 'Bearer ' + this.accessToken,
         }
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.status == '401') {
+            let refresh = Utility.refreshToken();
+            this.accessToken = refresh.accessToken;
+            this.expiresIn = refresh.expiresIn;
+            this.setSearch();
+          }
+          return response.json();
+        })
         .then((responseJson) => {
+          console.log("Tracks items:" + responseJson.tracks.items);
           this.listRefreshing = false;
           this.setState({
             ...this.state,
@@ -91,6 +100,7 @@ class SongList extends React.Component {
       ...this.state,
       isLoading: true,
     });
+
     this.setSearch();
     if (!text || text === '') {
       this.setState({
@@ -99,7 +109,7 @@ class SongList extends React.Component {
         albumsData: null,
         artistsData: null,
       })
-    }
+    };
   }
 
   selectSong(item) {
@@ -113,7 +123,7 @@ class SongList extends React.Component {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + this.userToken,
+        'Authorization': 'Bearer ' + this.accessToken,
       }
     };
 
@@ -128,6 +138,11 @@ class SongList extends React.Component {
               50
             );
             console.error("Cannot add track to playlist");
+          } else if (response.status == '401') {
+            let refresh = Utility.refreshToken();
+            this.accessToken = refresh.accessToken;
+            this.expiresIn = refresh.expiresIn;
+            this.selectSong();
           } else {
             ToastAndroid.showWithGravityAndOffset(
               'Track added to playlist',
@@ -145,7 +160,8 @@ class SongList extends React.Component {
 
   renderArtistImage(item) {
     if (typeof item.images[2] === 'undefined') {
-      return ("https://image.jimcdn.com/app/cms/image/transf/none/path/s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
+      return ("https://image.jimcdn.com/app/cms/image/transf/none/path/ \
+              s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
     } else {
       return (item.images[2].url);
     }
@@ -153,7 +169,7 @@ class SongList extends React.Component {
 
   renderSectionSeparator = ({leadingItem}) =>
     leadingItem ? (
-      <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewAllResults', {accessToken: this.userToken, userStr: this.userStr})}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewAllResults', {userStr: this.userStr})}>
         <View>
           <Text style={styles.separatorSectionList}>
             Voir tous
@@ -174,7 +190,8 @@ class SongList extends React.Component {
           </Text>
           <Text style={styles.styleArtistName}
                 numberOfLines={1}>
-            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) + ' • ' + Utility.checkSizeName(item.album.name, 35), 55)}
+            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) +
+             ' • ' + Utility.checkSizeName(item.album.name, 35), 55)}
           </Text>
         </View>
       </View>
@@ -191,7 +208,8 @@ class SongList extends React.Component {
             {Utility.checkSizeName(item.name, 45)}
           </Text>
           <Text style={styles.styleArtistName}>
-            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) + ' • ' + Utility.checkDate(item.release_date), 55)}
+            {' ' + Utility.checkSizeName(Utility.checkArtistsNumber(item.artists) +
+             ' • ' + Utility.checkDate(item.release_date), 55)}
           </Text>
         </View>
       </View>
@@ -232,7 +250,6 @@ class SongList extends React.Component {
               <Text style={styles.titleSectionList}>{title}</Text>
             </View>
           )}
-          //sections={this.sectionsList}
           renderItem={({ item, index, section }) => <Text>{item.name}</Text>}
           sections={[
             {title: 'Titres', data: this.state.tracksData, renderItem: this.renderTracks},
@@ -249,7 +266,10 @@ class SongList extends React.Component {
 
 
   render(){
-    const {navigation} = this.props;
+    SpotifyStore('user_data').then((result) => {
+      this.accessToken = result.access_token;
+    });
+
     return(
       <View style={styles.textInputContainer}>
         <TextInput

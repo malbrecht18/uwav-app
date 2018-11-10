@@ -9,9 +9,7 @@ export default class ViewAllResults extends React.Component {
 
   render() {
     const {navigation} = this.props;
-    const accessToken = navigation.getParam('accessToken', 'no token !');
-    const refreshToken = navigation.getParam('refreshToken', 'no refresh token !');
-    const expiresIn = navigation.getParam('expiresIn', 'no expire value !');
+
     const text = navigation.getParam('userStr', 'no text !');
 
     return (
@@ -19,7 +17,7 @@ export default class ViewAllResults extends React.Component {
         <View style={{ backgroundColor: '#5de2b4', flexDirection: 'row' }} />
         <LinearGradient colors={['rgba(0,255,255,0.7)', '#42af70']} style={styles.container}>
             <Text style={styles.textStyle}>{text}</Text>
-            <SongListAllResults token={accessToken} textSearch={text}/>
+            <SongListAllResults textSearch={text}/>
         </LinearGradient>
       </View>
     );
