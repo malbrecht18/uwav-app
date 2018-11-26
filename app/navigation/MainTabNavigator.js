@@ -1,12 +1,28 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createBottomTabNavigator } from 'react-navigation';
+import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import Search from '../screens/Search';
 import History from '../screens/History';
 import Playlist from '../screens/Playlist';
+import ViewAllResults from '../screens/ViewAllResults';
+import ViewAllAlbumsResults from '../screens/ViewAllAlbumsResults';
+import ViewAllArtistsResults from '../screens/ViewAllArtistsResults';
+
+const SearchStackNavigator = createStackNavigator (
+{
+  Search: { screen: Search },
+  ViewAllResults: { screen: ViewAllResults },
+  ViewAllAlbumsResults: { screen: ViewAllAlbumsResults },
+  ViewAllArtistsResults: { screen: ViewAllArtistsResults },
+}
+,
+{
+  headerMode: 'none',
+  initialRouteName: 'Search',
+});
 
 class TabIcon extends React.Component {
   render() {
@@ -14,18 +30,20 @@ class TabIcon extends React.Component {
     return (
       <MaterialIcons
         name={this.props.name}
-        size={Platform.OS === 'android' ? baseSize - 2 : baseSize}
-        color={this.props.focused ? 'white' : 'black'}                
+        size={Platform.OS === 'android' ? baseSize - 6 : baseSize}
+        color={this.props.focused ? 'white' : 'black'}
       />
     );
   }
 }
 
-const createTabNavigator = Platform.OS === 'android' ? createMaterialBottomTabNavigator : createBottomTabNavigator;
+//const createTabNavigator = Platform.OS === 'android' ? createMaterialBottomTabNavigator : createBottomTabNavigator;
+const createTabNavigator = createBottomTabNavigator;
+
 
 const MainTabNavigator = createTabNavigator({
 
-  Search: {screen: Search},
+  Search: {screen: SearchStackNavigator},
   Playlist: {screen: Playlist},
   History: {screen: History},
 
@@ -40,7 +58,7 @@ const MainTabNavigator = createTabNavigator({
 
       return {
         header: null,
-        tabBarLabel,   
+        tabBarLabel,
         tabBarIcon: ({ focused }) => {
           const { routeName } = navigation.state;
           if (routeName == 'Search'){
@@ -51,14 +69,15 @@ const MainTabNavigator = createTabNavigator({
           }
           if (routeName == 'History'){
             return <TabIcon name="history" focused={focused} />;
-          }          
-        },      
-      };      
+          }
+        },
+      };
     },
-    tabBarOptions: {      
+    initialRouteName: 'Playlist',
+    tabBarOptions: {
       tinColor: 'black',
       activeTintColor: 'white',
-      inactiveTintColor: 'black',      
+      inactiveTintColor: 'black',
       showIcon: true,
       showLabel: true,
       lazyLoad: true,
