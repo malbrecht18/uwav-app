@@ -1,26 +1,49 @@
 import React from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, Clipboard } from 'react-native';
 import { LinearGradient } from 'expo';
 
 import  Title  from '../components/Title/Title';
 import  ButtonConnection  from '../components/ButtonConnection/ButtonConnection';
+import SpotifyStore from '../components/SpotifyStore';
 
 export default class Session extends React.Component {
 
     constructor(props) {
         super(props);
-        this.sessionCode = "";
-
+        this.state = {
+            text: '4b55a7a8-bdf6-4929-9a1b-eb1cc42c3b7d'
+        };
         this.joinSession = this.joinSession.bind(this);
-        this.handleRefresh = this.handleRefresh.bind(this);
-    }
-
-    handleRefresh(text) {
-        this.sessionCode = text;
     }
 
     joinSession() {
-        console.log(this.sessionCode);
+      this.sessionId = this.state.text;
+      fetch('http://192.168.43.128:3000/session/' + this.sessionId, {
+        method: 'GET',
+        headers: {
+            Authorization: 'Basic ' + this.client_code,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    })
+    .then((response) => {
+        if(response.status == "200") {
+            return response.json();
+        } else {
+            console.error("Session doesn't exists");
+        }
+    })
+    .then((responseJson) => {
+        let sessionData = {
+          playlist_id: responseJson.playlist_id
+        }
+
+        SpotifyStore('session_data', sessionData).then(() => {
+            this.props.navigation.navigate('Tab');
+        });
+    })
+    .catch((error) => {
+        console.error(error);
+    });
     }
 
   render() {
@@ -30,15 +53,15 @@ export default class Session extends React.Component {
         <LinearGradient colors={['rgba(0,255,255,0.7)', '#42af70']} style={styles.container}>
             <Title/>
             <TextInput
-                onChangeText={(text) => this.handleRefresh(text)}
+                style={styles.styleTextInput}
+                onChangeText={(text) => this.setState({text})}
+                value={this.state.text}
                 placeholder='Rechercher...'
                 underlineColorAndroid='transparent'
                 returnKeyType='search'
                 spellCheck={false}
                 maxLength={40}
                 clearButtonMode='always'
-                style={styles.styleTextInput}
-                value={this.sessionCode}
             />
             <ButtonConnection onPress={this.joinSession}/>
         </LinearGradient>

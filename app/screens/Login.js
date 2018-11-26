@@ -1,5 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, View, WebView} from 'react-native';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 import Base64 from '../components/Base64';
 import SpotifyStore from '../components/SpotifyStore';
@@ -24,6 +25,11 @@ export default class Login extends React.Component {
         this.getToken = this.getToken.bind(this);
         this.setUri = this.setUri.bind(this);
     }
+
+    resetAction = StackActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName: 'Session' })],
+      });
 
     generateRandomString = (length) => {
         var text = '';
@@ -66,7 +72,7 @@ export default class Login extends React.Component {
             };
 
             SpotifyStore('user_data', userData).then(() => {
-                this.props.navigation.navigate('Tab');
+                this.props.navigation.dispatch(this.resetAction);
             });
         })
         .catch((error) => {

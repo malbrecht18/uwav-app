@@ -19,7 +19,7 @@ export default class ScreenTest extends React.Component {
       timer: null,
     };
 
-    this.playlistId = "6VIMwOQw4rOInLuRa7jayv";
+    this.playlistId = "";
 
     this.renderTracks = this.renderTracks.bind(this);
     this.getTracks = this.getTracks.bind(this);
@@ -39,35 +39,40 @@ export default class ScreenTest extends React.Component {
       this.expiresIn = result.expires_in;
       this.clientCode = result.client_code;
 
-      let url = "https://api.spotify.com/v1/playlists/" + this.playlistId;
-      let options = {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.accessToken,
-        }
-      };
+      SpotifyStore('session_data').then((result) => {
 
-      fetch(url, options)
-      .then((response) => {
-        if (response.status == '401') {
-          let refresh = Utility.refreshToken();
-          this.accessToken = refresh.accessToken;
-          this.expiresIn = refresh.expiresIn;
-          this.getTracks();
-        } else if (response.status == '200') {
-          return response.json();
-        }
-      })
-      .then((responseJson) => {
-        this.setState({
-          ...this.state,
-          first: false,
-          dataSource: responseJson.tracks.items,
-          isLoading: false,
-        });
-      })
+        this.playlistId = result.playlist_id;
+
+        let url = "https://api.spotify.com/v1/playlists/" + this.playlistId;
+        let options = {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + this.accessToken,
+          }
+        };
+
+        fetch(url, options)
+        .then((response) => {
+          if (response.status == '401') {
+            let refresh = Utility.refreshToken();
+            this.accessToken = refresh.accessToken;
+            this.expiresIn = refresh.expiresIn;
+            this.getTracks();
+          } else if (response.status == '200') {
+            return response.json();
+          }
+        })
+        .then((responseJson) => {
+          this.setState({
+            ...this.state,
+            first: false,
+            dataSource: responseJson.tracks.items,
+            isLoading: false,
+          });
+        })
+      });
     });
   }
 
