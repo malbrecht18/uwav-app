@@ -19,10 +19,8 @@ class AlbumListAllResult extends React.Component {
 
     this.setSearch = this.setSearch.bind(this);
     this.displayDataSong = this.displayDataSong.bind(this);
-    this.renderList = this.renderList.bind(this);
 
     this.renderAlbums = this.renderAlbums.bind(this);
-    this.renderArtistImage = this.renderArtistImage.bind(this);
   }
 
   setSearch() {
@@ -52,7 +50,7 @@ class AlbumListAllResult extends React.Component {
           this.listRefreshing = false;
           this.setState({
             ...this.state,
-            albumsData: responseJson.albums.items,
+            albumsData: responseJson.albums.items.filter(x => x.album_type === this.type),
             isLoading: false,
           });
         })
@@ -95,11 +93,12 @@ class AlbumListAllResult extends React.Component {
   }
 
   renderArtistImage(item) {
-    if (typeof item.album === 'undefined') {
+    if (typeof item.images[2] === 'undefined') {
+      console.log("no cover");
       return ("https://image.jimcdn.com/app/cms/image/transf/none/path/ \
               s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
     } else {
-      return (item.album.images[2].url);
+      return (item.images[2].url);
     }
   }
 

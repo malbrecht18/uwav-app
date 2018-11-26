@@ -20,11 +20,11 @@ module.exports = StyleSheet.create({
         fontSize: 12,
     },
     imageArtistAndTrackStyle: {
-      borderBottomLeftRadius: 100,
-      borderBottomRightRadius: 100,
-      borderTopLeftRadius: 100,
-      borderTopRightRadius: 100,
-      overflow: 'hidden',
+    //  borderBottomLeftRadius: 100,
+    //  borderBottomRightRadius: 100,
+    //  borderTopLeftRadius: 100,
+    //  borderTopRightRadius: 100,
+    //  overflow: 'hidden',
       marginRight: 20,
     },
       container: {
