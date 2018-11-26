@@ -7,12 +7,12 @@ import SpotifyStore from '../SpotifyStore';
 
 var styles = require('./styles');
 
-class SongListAllResults extends React.Component {
+class AlbumListAllResult extends React.Component {
 
   constructor(props){
     super(props);
     this.userStr = this.props.textSearch
-    this.type = "track"
+    this.type = "album"
     this.limit = 50
     this.state ={ isLoading: false, first: true }
     this.listRefreshing = false
@@ -21,7 +21,7 @@ class SongListAllResults extends React.Component {
     this.displayDataSong = this.displayDataSong.bind(this);
     this.renderList = this.renderList.bind(this);
 
-    this.renderTracks = this.renderTracks.bind(this);
+    this.renderAlbums = this.renderAlbums.bind(this);
     this.renderArtistImage = this.renderArtistImage.bind(this);
   }
 
@@ -52,7 +52,7 @@ class SongListAllResults extends React.Component {
           this.listRefreshing = false;
           this.setState({
             ...this.state,
-            tracksData: responseJson.tracks.items,
+            albumsData: responseJson.albums.items,
             isLoading: false,
           });
         })
@@ -70,7 +70,7 @@ class SongListAllResults extends React.Component {
         this.setState({
           ...this.state,
           isLoading: false,
-          tracksData: null,
+          albumsData: null,
         })
       }
   }
@@ -88,7 +88,7 @@ class SongListAllResults extends React.Component {
       if (!this.userStr || this.userStr === '') {
         this.setState({
           ...this.state,
-          tracksData: null,
+          albumsData: null,
         })
       }
     });
@@ -103,7 +103,7 @@ class SongListAllResults extends React.Component {
     }
   }
 
-  renderTracks = ({ item }) =>
+  renderAlbums = ({ item }) =>
     <TouchableOpacity>
         <View style={styles.container}>
         <View style={styles.imageArtistAndTrackStyle}>
@@ -138,8 +138,8 @@ class SongListAllResults extends React.Component {
       return(
         <FlatList
           style={styles.flatListStyle}
-          data= {this.state.tracksData}
-          renderItem={this.renderTracks}
+          data= {this.state.albumsData}
+          renderItem={this.renderAlbums}
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
         />
@@ -162,4 +162,4 @@ class SongListAllResults extends React.Component {
   }
 }
 
-export default withNavigation(SongListAllResults);
+export default withNavigation(AlbumListAllResult);

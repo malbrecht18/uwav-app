@@ -34,7 +34,7 @@ class SongList extends React.Component {
     this.renderAlbums = this.renderAlbums.bind(this);
     this.renderArtists = this.renderArtists.bind(this);
 
-    this.renderSectionSeparator = this.renderSectionSeparator.bind(this);
+    //this.renderSectionSeparator = this.renderSectionSeparator.bind(this);
     this.renderArtistImage = this.renderArtistImage.bind(this);
   }
 
@@ -130,27 +130,13 @@ class SongList extends React.Component {
     fetch(url, options)
         .then((response) => {
           if (response.status != 201) {
-            ToastAndroid.showWithGravityAndOffset(
-              'Cannot add track to playlist',
-              ToastAndroid.LONG,
-              ToastAndroid.CENTER,
-              25,
-              50
-            );
+            if (response.status == '401') {
+              let refresh = Utility.refreshToken();
+              this.accessToken = refresh.accessToken;
+              this.expiresIn = refresh.expiresIn;
+              this.selectSong();
+            }
             console.error("Cannot add track to playlist");
-          } else if (response.status == '401') {
-            let refresh = Utility.refreshToken();
-            this.accessToken = refresh.accessToken;
-            this.expiresIn = refresh.expiresIn;
-            this.selectSong();
-          } else {
-            ToastAndroid.showWithGravityAndOffset(
-              'Track added to playlist',
-              ToastAndroid.SHORT,
-              ToastAndroid.BOTTOM,
-              25,
-              50
-            );
           }
         })
         .catch((error) => {
@@ -167,7 +153,7 @@ class SongList extends React.Component {
     }
   }
 
-  renderSectionSeparator = ({leadingItem}) =>
+ /* renderSectionSeparator = ({leadingItem}) =>
     leadingItem ? (
       <TouchableOpacity onPress={() => this.props.navigation.navigate('ViewAllResults', {userStr: this.userStr})}>
         <View>
@@ -176,13 +162,32 @@ class SongList extends React.Component {
           </Text>
         </View>
       </TouchableOpacity>
-    ) : null
+    ) : null*/
+
+  renderNextScreen(path){
+    switch (path) {
+      case 'Titres':
+        this.props.navigation.navigate('ViewAllResults', {userStr: this.userStr});
+        break;
+      case 'Albums':
+        this.props.navigation.navigate('ViewAllAlbumsResults', {userStr: this.userStr});
+        break;
+      case 'Artists':
+        this.props.navigation.navigate('ViewAllArtistsResults', {userStr: this.userStr});
+        break;
+      default:
+        return null;
+    }
+  }
 
   renderTracks = ({ item }) =>
     <TouchableOpacity onPress={() => this.selectSong(item)}>
       <View style={styles.container}>
-        <Image style={styles.imageTrackStyle}
-              source={{uri: item.album.images[2].url}} />
+        <View style={styles.imageArtistAndTrackStyle}>
+          <Image style={styles.imageTrackStyle}
+                source={{uri: item.album.images[2].url}} />
+        </View>
+                {console.log(item.album.images[2].url)}
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
@@ -201,7 +206,7 @@ class SongList extends React.Component {
     <TouchableOpacity>
       <View style={styles.container}>
         <Image style={styles.imageAlbumStyle}
-               source={{uri: item.images[2].url}} />
+               source={{uri: this.renderArtistImage(item)}} />
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
@@ -218,8 +223,10 @@ class SongList extends React.Component {
   renderArtists = ({item, index, section}) =>
     <TouchableOpacity>
       <View style={styles.container}>
-        <Image style={styles.imageArtistStyle}
-               source={{uri: this.renderArtistImage(item)}} />
+        <View style={styles.imageArtistAndTrackStyle}>
+          <Image style={styles.imageArtistStyle}
+                source={{uri: this.renderArtistImage(item)}} />
+        </View>
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>
@@ -257,7 +264,16 @@ class SongList extends React.Component {
             {title: 'Artists', data: this.state.artistsData, renderItem: this.renderArtists}
           ]}
           refreshing = {this.listRefreshing}
-          SectionSeparatorComponent={this.renderSectionSeparator}
+          //SectionSeparatorComponent={this.renderSectionSeparator}
+          renderSectionFooter={({section: {title}}) => (
+            <TouchableOpacity onPress={() => this.renderNextScreen(title)}>
+            <View>
+              <Text style={styles.separatorSectionList}>
+                Voir tous
+              </Text>
+            </View>
+          </TouchableOpacity>
+          )}
           stickySectionHeadersEnabled={false}
         />
       )

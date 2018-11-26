@@ -8,11 +8,15 @@ import Search from '../screens/Search';
 import History from '../screens/History';
 import Playlist from '../screens/Playlist';
 import ViewAllResults from '../screens/ViewAllResults';
+import ViewAllAlbumsResults from '../screens/ViewAllAlbumsResults';
+import ViewAllArtistsResults from '../screens/ViewAllArtistsResults';
 
 const SearchStackNavigator = createStackNavigator (
 {
   Search: { screen: Search },
   ViewAllResults: { screen: ViewAllResults },
+  ViewAllAlbumsResults: { screen: ViewAllAlbumsResults },
+  ViewAllArtistsResults: { screen: ViewAllArtistsResults },
 }
 ,
 {

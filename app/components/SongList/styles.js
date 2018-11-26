@@ -42,7 +42,7 @@ module.exports = StyleSheet.create({
       imageArtistStyle: {
         width: 50,
         height: 50,
-        borderRadius: 100,
+    //    borderRadius: 100,
     },
       imageAlbumStyle: {
         width: 50,
@@ -51,8 +51,16 @@ module.exports = StyleSheet.create({
       imageTrackStyle: {
         width: 50,
         height: 50,
-        borderRadius: 100,
+    //    borderRadius: 100,
     },
+      imageArtistAndTrackStyle: {
+        borderBottomLeftRadius: 100,
+        borderBottomRightRadius: 100,
+        borderTopLeftRadius: 100,
+        borderTopRightRadius: 100,
+        overflow: 'hidden',
+        marginRight: 20,
+      },
       viewTitleSectionList: {
         flexDirection: 'row',
         flex: 1,

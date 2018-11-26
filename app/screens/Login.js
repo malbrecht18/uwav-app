@@ -13,7 +13,7 @@ export default class Login extends React.Component {
         this.response_type = 'code';
         this.scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private playlist-read-private playlist-read-collaborative';
         this.spotify_state = this.generateRandomString(16);
-        this.redirect_uri = 'http://192.168.43.128/spotify/index.html';
+        this.redirect_uri = 'https://www.google.com/';
         this.authorizationCode;
 
         this.state = {
