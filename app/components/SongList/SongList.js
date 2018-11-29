@@ -62,7 +62,6 @@ class SongList extends React.Component {
           return response.json();
         })
         .then((responseJson) => {
-          console.log("Tracks items:" + responseJson.tracks.items);
           this.listRefreshing = false;
           this.setState({
             ...this.state,
@@ -187,7 +186,6 @@ class SongList extends React.Component {
           <Image style={styles.imageTrackStyle}
                 source={{uri: item.album.images[2].url}} />
         </View>
-                {console.log(item.album.images[2].url)}
         <View style={{flexDirection: 'column'}}>
           <Text style={styles.styleSongName}
                 numberOfLines={1}>

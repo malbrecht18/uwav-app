@@ -94,10 +94,8 @@ export default class Login extends React.Component {
                     ref = {(ref) => { this.webview = ref; }}
                     style={{marginTop: 24}}
                     onNavigationStateChange = {(state) => {
-                        console.log(state);
                         if (state.url.indexOf(this.redirect_uri + '?code') != -1 && !state.loading) {
                             this.authorizationCode = state.url.substring(state.url.indexOf('code') + 5, state.url.length);
-                            console.log('This is the authorization code : ' + this.authorizationCode);
                             this.getToken();
                         }
                     }}
