@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import { LinearGradient } from 'expo';
 
 import Title from '../components/Title/Title';
-import SongListAllResults from '../components/SongListAllResults/SongListAllResults';
+import ArtistListAllResult from '../components/ArtistListAllResults/ArtistListAllResults';
 
 export default class ViewAllArtistsResults extends React.Component {
 
@@ -16,8 +16,8 @@ export default class ViewAllArtistsResults extends React.Component {
       <View style={{ flex: 1 , flexDirection: 'row'}}>
         <View style={{ backgroundColor: '#5de2b4', flexDirection: 'row' }} />
         <LinearGradient colors={['rgba(0,255,255,0.7)', '#42af70']} style={styles.container}>
-            <Text style={styles.textStyle}>{text}</Text>
-            <SongListAllResults textSearch={text}/>
+            <Text style={styles.textStyle}>"{text}" dans Artiste</Text>
+            <ArtistListAllResult textSearch={text}/>
         </LinearGradient>
       </View>
     );
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   textStyle: {
-    fontSize: 64,
-    color: 'white',
+    fontSize: 24,
+    color: 'black',
+    marginTop: 12,
   },
 });

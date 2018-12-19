@@ -7,12 +7,12 @@ import SpotifyStore from '../SpotifyStore';
 
 var styles = require('./styles');
 
-class AlbumListAllResult extends React.Component {
+class ArtistListAllResult extends React.Component {
 
   constructor(props){
     super(props);
     this.userStr = this.props.textSearch
-    this.type = "album"
+    this.type = "artist"
     this.limit = 50
     this.state ={ isLoading: false, first: true }
     this.listRefreshing = false
@@ -20,7 +20,7 @@ class AlbumListAllResult extends React.Component {
     this.setSearch = this.setSearch.bind(this);
     this.displayDataSong = this.displayDataSong.bind(this);
 
-    this.renderAlbums = this.renderAlbums.bind(this);
+    this.renderArtist = this.renderArtist.bind(this);
   }
 
   setSearch() {
@@ -50,9 +50,10 @@ class AlbumListAllResult extends React.Component {
           this.listRefreshing = false;
           this.setState({
             ...this.state,
-            albumsData: responseJson.albums.items.filter(x => x.album_type === this.type),
+            artistData: responseJson.artists.items,
             isLoading: false,
           });
+          console.log("item");
         })
         .catch((error) =>{
           this.listRefreshing = false;
@@ -68,7 +69,7 @@ class AlbumListAllResult extends React.Component {
         this.setState({
           ...this.state,
           isLoading: false,
-          albumsData: null,
+          artistData: null,
         })
       }
   }
@@ -86,18 +87,10 @@ class AlbumListAllResult extends React.Component {
       if (!this.userStr || this.userStr === '') {
         this.setState({
           ...this.state,
-          albumsData: null,
+          artistData: null,
         })
       }
     });
-  }
-
-  moveToTracksFromAlbum(item) {
-    this.props.navigation.navigate('ViewTracksFromAlbum', {userStr: this.userStr,
-                                                            albumId: item.id,
-                                                            imageUrl: item.images[1],
-                                                            releaseDate: item.release_date,
-                                                            albumName: item.name});
   }
 
   renderArtistImage(item) {
@@ -110,8 +103,8 @@ class AlbumListAllResult extends React.Component {
     }
   }
 
-  renderAlbums = ({ item }) =>
-    <TouchableOpacity onPress={() => this.moveToTracksFromAlbum(item)}>
+  renderArtist = ({ item }) =>
+    <TouchableOpacity>
         <View style={styles.container}>
         <View style={styles.imageArtistAndTrackStyle}>
             <Image style={styles.imageStyle}
@@ -121,10 +114,6 @@ class AlbumListAllResult extends React.Component {
                 <Text style={styles.styleSongName}
                     numberOfLines={1}>
                 {Utility.checkSizeName(item.name, 45)}
-                </Text>
-                <Text style={styles.styleArtistName}
-                    numberOfLines={1}>
-                {Utility.checkArtistsNumber(item.artists)}
                 </Text>
             </View>
         </View>
@@ -145,8 +134,8 @@ class AlbumListAllResult extends React.Component {
       return(
         <FlatList
           style={styles.flatListStyle}
-          data= {this.state.albumsData}
-          renderItem={this.renderAlbums}
+          data= {this.state.artistData}
+          renderItem={this.renderArtist}
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
         />
@@ -169,4 +158,4 @@ class AlbumListAllResult extends React.Component {
   }
 }
 
-export default withNavigation(AlbumListAllResult);
+export default withNavigation(ArtistListAllResult);

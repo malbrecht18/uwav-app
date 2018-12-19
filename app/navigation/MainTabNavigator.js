@@ -10,6 +10,7 @@ import Playlist from '../screens/Playlist';
 import ViewAllResults from '../screens/ViewAllResults';
 import ViewAllAlbumsResults from '../screens/ViewAllAlbumsResults';
 import ViewAllArtistsResults from '../screens/ViewAllArtistsResults';
+import ViewTracksFromAlbum from '../screens/ViewTracksFromAlbum';
 
 const SearchStackNavigator = createStackNavigator (
 {
@@ -17,6 +18,7 @@ const SearchStackNavigator = createStackNavigator (
   ViewAllResults: { screen: ViewAllResults },
   ViewAllAlbumsResults: { screen: ViewAllAlbumsResults },
   ViewAllArtistsResults: { screen: ViewAllArtistsResults },
+  ViewTracksFromAlbum: { screen: ViewTracksFromAlbum},
 }
 ,
 {

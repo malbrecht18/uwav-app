@@ -7,28 +7,32 @@ import SpotifyStore from '../SpotifyStore';
 
 var styles = require('./styles');
 
-class AlbumListAllResult extends React.Component {
+class TracksFromAlbumResult extends React.Component {
 
   constructor(props){
     super(props);
     this.userStr = this.props.textSearch
-    this.type = "album"
+    this.albumId = this.props.albumId
+    this.type = "track"
     this.limit = 50
     this.state ={ isLoading: false, first: true }
     this.listRefreshing = false
 
     this.setSearch = this.setSearch.bind(this);
     this.displayDataSong = this.displayDataSong.bind(this);
+    this.renderList = this.renderList.bind(this);
 
-    this.renderAlbums = this.renderAlbums.bind(this);
+    this.renderTracks = this.renderTracks.bind(this);
+    this.renderArtistImage = this.renderArtistImage.bind(this);
   }
 
   setSearch() {
     if (this.userStr != "") {
-      return fetch('https://api.spotify.com/v1/search?q='
-                    + encodeURIComponent(this.userStr)
-                    + '&type=' + encodeURIComponent(this.type)
-                    + '&limit=' + encodeURIComponent(this.limit),
+      return fetch('https://api.spotify.com/v1/albums/'
+                    + encodeURIComponent(this.albumId)
+                    + '/tracks'
+                    + '?limit='
+                    + this.limit,
       {
         method: 'GET',
         headers: {
@@ -50,7 +54,7 @@ class AlbumListAllResult extends React.Component {
           this.listRefreshing = false;
           this.setState({
             ...this.state,
-            albumsData: responseJson.albums.items.filter(x => x.album_type === this.type),
+            tracksData: responseJson.items,
             isLoading: false,
           });
         })
@@ -68,7 +72,7 @@ class AlbumListAllResult extends React.Component {
         this.setState({
           ...this.state,
           isLoading: false,
-          albumsData: null,
+          tracksData: null,
         })
       }
   }
@@ -86,37 +90,24 @@ class AlbumListAllResult extends React.Component {
       if (!this.userStr || this.userStr === '') {
         this.setState({
           ...this.state,
-          albumsData: null,
+          tracksData: null,
         })
       }
     });
   }
 
-  moveToTracksFromAlbum(item) {
-    this.props.navigation.navigate('ViewTracksFromAlbum', {userStr: this.userStr,
-                                                            albumId: item.id,
-                                                            imageUrl: item.images[1],
-                                                            releaseDate: item.release_date,
-                                                            albumName: item.name});
-  }
-
   renderArtistImage(item) {
-    if (typeof item.images[2] === 'undefined') {
-      console.log("no cover");
+    if (typeof item.album === 'undefined') {
       return ("https://image.jimcdn.com/app/cms/image/transf/none/path/ \
               s1ffdfc26721cdb35/image/idb7de00841fb1ae1/version/1465665708/image.png");
     } else {
-      return (item.images[2].url);
+      return (item.album.images[2].url);
     }
   }
 
-  renderAlbums = ({ item }) =>
-    <TouchableOpacity onPress={() => this.moveToTracksFromAlbum(item)}>
+  renderTracks = ({ item }) =>
+    <TouchableOpacity>
         <View style={styles.container}>
-        <View style={styles.imageArtistAndTrackStyle}>
-            <Image style={styles.imageStyle}
-                    source={{uri: this.renderArtistImage(item)}} />
-        </View>
             <View style={{flexDirection: 'column'}}>
                 <Text style={styles.styleSongName}
                     numberOfLines={1}>
@@ -145,8 +136,8 @@ class AlbumListAllResult extends React.Component {
       return(
         <FlatList
           style={styles.flatListStyle}
-          data= {this.state.albumsData}
-          renderItem={this.renderAlbums}
+          data= {this.state.tracksData}
+          renderItem={this.renderTracks}
           keyExtractor={(item, index) => index.toString()}
           refreshing = {this.listRefreshing}
         />
@@ -169,4 +160,4 @@ class AlbumListAllResult extends React.Component {
   }
 }
 
-export default withNavigation(AlbumListAllResult);
+export default withNavigation(TracksFromAlbumResult);

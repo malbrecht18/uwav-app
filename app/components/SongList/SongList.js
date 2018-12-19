@@ -265,7 +265,7 @@ class SongList extends React.Component {
           ]}
           refreshing = {this.listRefreshing}
           //SectionSeparatorComponent={this.renderSectionSeparator}
-          renderSectionFooter={({section: {title}}) => (
+          renderSectionFooter={({section: {item, title}}) => (
             <TouchableOpacity onPress={() => this.renderNextScreen(title)}>
             <View>
               <Text style={styles.separatorSectionList}>
